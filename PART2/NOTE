@@ -1,1 +1,35 @@
+######베이스라인########
+#EDA: shape, info,describe, isnull().sum(), value_count(), catergory별
+#데이터 전처리(train,test 둘다 적용, 단 행삭제는 test 적용노노노노): 결측치 값 처리:mode()[0],fillna,y_train=train.pop('target') 인코딩(원-핫, 레이블)
+#원-핫 인코딩 후 사이즈 비교할 때, columns 수가 다르면, train과 test pd.concat([],axis=0)으로 합친 후에 pd.get_dummies(data)하고 iloc[:len(train)]으로 나눈다
+#레이블 인코딩: cols 만든 다음에 반복문 >> for a in cols: 한다!!
+cols = train.select_dtypes(include='object').columns
+for a in cols:
+  le = LabelEncoder()
+  train[cols] = le.fit_transform(train[cols])
+  test[cols] = le.transform(test[cols])
+#스케일링(선택): Min-Max Scaler, Standard Scaler, RobustScaler (from sklearn,preprocessing import)
+#검증데이터 나누기: from sklearn.model_selection import train_test_split(train, target, test_size=0.2,random_state=0)
+#검증데이터 나눈 후에 shape check!!: X_tr, X_val >>> column size 동일, y_tr,y_val >>> series 형태여야 한다. 열에 숫자 1이 없어야 한다
+#머신러닝 학습 및 평가: from sklearn.ensemble import RandomForestClassifier/RandomForestRegressor
+##rf= RandomForestClassifier/RandomForestRegressor
+#rf.fit(X,ytr)
+#pred = rf.predict(X_val)
+#제대로 학습되었는지 평가지표(랜덤포레스트): roc_acu_score(predict_proba) 그 외에는 predict():accuracy_score, f1_score
 
+###이진 분류 타겟이 '문자'일 때: 
+#roc_acu_score(predict_proba)사용하면
+#이 때 y_train.valu_counts(): 통해서 순서를 알고 pred[:,0] 또는 pred[:,1]로 넣어서 평가지표한다.
+#즉, roc_auc = roc_auc_score(y_val,pred[:,1])
+#accuracy는 pred만 넣어도 오케이
+#그러나 f1_score,recall_score,precision_score 는 어떤 값이 양성 클래스인지 pos_label=''넣어야 한다. f1 = f1_score(y_val,pred,pos_label='')
+###다중분류일 때
+#여기서는 이진분류와 달리 숫자와 ㅁ누자 형태로 인한 코딩에서의 차이가 없다
+#average = 'micro'/'macro'
+
+###회귀 평가지표
+#mse: mean_squared_error
+#mae: mean_absolute_error
+#r2_score(결정계수:1에 가까울수록 굿)
+#rmse:root_mean_squared_error
+#msle:mean_squared_log_error
